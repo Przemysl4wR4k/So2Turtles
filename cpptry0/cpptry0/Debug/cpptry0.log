@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(88,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+  cpptry0.vcxproj -> C:\Users\User\source\repos\cpptry0\Debug\cpptry0.exe

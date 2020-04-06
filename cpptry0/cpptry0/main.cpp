@@ -10,18 +10,18 @@
 using namespace std;
 
 class Turtle {
-	private:
-		int xPos;
-		int yPos;	
-		int lifes;
-	public:
-		Turtle(int x, int y );
-		int getXPos();
-		int getYPos();
-		int getLifes();
-		void setXPos(int x);
-		void setYPos(int y);
-		void setLifes(int n);
+private:
+	int xPos;
+	int yPos;
+	int lifes;
+public:
+	Turtle(int x, int y);
+	int getXPos();
+	int getYPos();
+	int getLifes();
+	void setXPos(int x);
+	void setYPos(int y);
+	void setLifes(int n);
 };
 
 Turtle::Turtle(int x, int y) {
@@ -149,11 +149,11 @@ void loadFrame() {
 }
 
 void elementsToFrame() {
-	
-	loadFrame();
-	
 
-	/* zajebiste debugowanie			
+	loadFrame();
+
+
+	/* zajebiste debugowanie
 
 	cout << turtles.size()<<" size of turtles"<<endl;
 	cout << turtles.at(0).getXPos()<<" player1 X"<<endl;
@@ -173,10 +173,10 @@ void elementsToFrame() {
 
 	for (int i = 0; i < straws.size(); i++) {
 		for (int j = 0; j < strawHeight; j++)
-		{	
+		{
 			if (j + straws.at(i).getYPos() > 0)
 			{
-				if (j + straws.at(i).getYPos() < height-1)
+				if (j + straws.at(i).getYPos() < height - 1)
 					frameInString.at(j + straws.at(i).getYPos()).replace(straws.at(i).getXPos(), strawWidth, strawInString.at(j));
 			}
 		}
@@ -198,7 +198,7 @@ void drawTurtle() {
 	cout << "      / \/   \/ \		  " << endl;
 	cout << "     / / \___/ \ \		  " << endl;
 	cout << "    /_/    v    \_\	  " << endl;
-	
+
 
 // tak cie piszą
 
@@ -255,8 +255,19 @@ void generateStraw() {
 	}
 }
 
+void isTurtleHurt() {
+	for (Straw i : straws) {
+		if ((turtles.at(0).getXPos() == i.getXPos()) || (turtles.at(0).getYPos() == i.getYPos())) {
+			turtles.at(0).setLifes(turtles.at(0).getLifes() - 1);
+		}
+		if ((turtles.at(1).getXPos() == i.getXPos()) || (turtles.at(1).getYPos() == i.getYPos())) {
+			turtles.at(1).setLifes(turtles.at(1).getLifes() - 1);
+		}
+	}
+}
+
 void strawMustFall() {
-	for(int i = 0; i < straws.size(); i++)
+	for (int i = 0; i < straws.size(); i++)
 	{
 		int oldY = straws.at(i).getYPos();
 		oldY++;
@@ -275,7 +286,7 @@ void input() {
 		switch (_getch())
 		{
 		case 72:		//up
-			turtles.at(0).setYPos(oldY1 -=3);	//player1.setYPos(oldY1 -= 3);
+			turtles.at(0).setYPos(oldY1 -= 3);	//player1.setYPos(oldY1 -= 3);
 			break;
 
 		case 80:		//down
@@ -290,8 +301,8 @@ void input() {
 			turtles.at(0).setXPos(oldX1 -= 3);	//player1.setXPos(oldX1 -= 3);
 			break;
 		}
-		
-		switch (_getch()) 
+
+		switch (_getch())
 		{
 		case 'w':		//up
 			turtles.at(1).setYPos(oldY2 -= 3);	//player2.setYPos(oldY2 -= 3);
@@ -334,15 +345,15 @@ int main()
 		generateStraw();
 		strawMustFall();
 		input();
-		
+
 
 		for (unsigned int i = 0; i < frameInString.size(); i++) {
 			cout << frameInString[i] << endl;
 		}
-		
-		printf("Czas rozgrywki: %d s\n", ((clock() - start))/1000);
-		cout << "Zycia gracza nr1: <3 <3 <3" << endl;
-		cout << "Zycia gracza nr2: <3 <3 <3" << endl;
+
+		printf("Czas rozgrywki: %d s\n", ((clock() - start)) / 1000);
+		cout << "Zycia gracza nr1: " << turtles.at(0).getLifes() << endl;
+		cout << "Zycia gracza nr2: " << turtles.at(1).getLifes() << endl;
 		Sleep(100);
 
 	}

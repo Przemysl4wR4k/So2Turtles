@@ -52,23 +52,30 @@ class Straw {
 private:
 	int xPos;
 	int yPos;
+	int id;
 public:
-	Straw(int x, int y);
+	Straw(int x, int y, int i);
 	int getXPos();
 	int getYPos();
+	int getId();
 	void setXPos(int x);
 	void setYPos(int y);
 };
 
-Straw::Straw(int x, int y) {
+Straw::Straw(int x, int y, int i) {
 	xPos = x;
 	yPos = y;
+	id = i;
+
 }
 int Straw::getXPos(void) {
 	return xPos;
 }
 int Straw::getYPos(void) {
 	return yPos;
+}
+int Straw::getId(void) {
+	return id;
 }
 void Straw::setXPos(int x) {
 	xPos = x;
@@ -95,6 +102,10 @@ int turtleHeight = 10;
 
 int strawWidth = 4;
 int strawHeight = 10;
+
+int howManyStraws = 0;
+int oldIndexOfStrawToDel = -1;
+int indexOfStrawToDel = -1;
 
 clock_t start;
 //int turtleX = 5;
@@ -154,7 +165,6 @@ void elementsToFrame() {
 
 
 	/* zajebiste debugowanie
-
 	cout << turtles.size()<<" size of turtles"<<endl;
 	cout << turtles.at(0).getXPos()<<" player1 X"<<endl;
 	cout << turtles.at(0).getYPos()<<" player1 Y"<<endl;
@@ -185,9 +195,7 @@ void elementsToFrame() {
 
 /*
 void drawTurtle() {
-
 // tak cie widzą
-
 	cout << "          ___		      " << endl;
 	cout << "    __   |   |   __      " << endl;
 	cout << "    \ \  |___|  / /      " << endl;
@@ -198,10 +206,7 @@ void drawTurtle() {
 	cout << "      / \/   \/ \		  " << endl;
 	cout << "     / / \___/ \ \		  " << endl;
 	cout << "    /_/    v    \_\	  " << endl;
-
-
 // tak cie piszą
-
 	cout << "          ___		      " << endl;
 	cout << "    __   |   |   __      " << endl;
 	cout << "    \\ \\  |___|  / /      " << endl;
@@ -212,12 +217,9 @@ void drawTurtle() {
 	cout << "      / \\/   \\/ \\		  " << endl;
 	cout << "     / / \\___/ \\ \\		  " << endl;
 	cout << "    /_/    v    \\_\\	  " << endl;
-
 }
-
 void drawStraw() {
 // tak cie widzą
-
 	cout << "      __      	      " << endl;
 	cout << "      \ \			  " << endl;
 	cout << "       \ \			  " << endl;
@@ -228,10 +230,7 @@ void drawStraw() {
 	cout << "            \ \	  " << endl;
 	cout << "             \ \	  " << endl;
 	cout << "	       	   \_\	  " << endl;
-
-
 // tak cie piszą
-
 	cout << "      __      	      " << endl;
 	cout << "      \\ \\			  " << endl;
 	cout << "       \\ \\			  " << endl;
@@ -244,25 +243,65 @@ void drawStraw() {
 	cout << "              \\_\\	  " << endl;
 }
 */
-
+void deleteStraw(int index) {
+	straws.erase(straws.begin() + index);
+}
 void generateStraw() {
-	int number = rand() % 30;
+	int number = rand() % 20;
 	if (number == 1) {
 		int strawPosition = rand() % width;
-		Straw newStraw(strawPosition, -9);
+		Straw newStraw(strawPosition, -9, howManyStraws);
+		howManyStraws++;
 		straws.push_back(newStraw);
 		elementsToFrame();
 	}
 }
 
 void isTurtleHurt() {
-	for (Straw i : straws) {
-		if ((turtles.at(0).getXPos() == i.getXPos()) || (turtles.at(0).getYPos() == i.getYPos())) {
+	for (int i = 0; i < straws.size(); i++) {
+		if ((straws.at(i).getXPos() >= turtles.at(0).getXPos()+1 && straws.at(i).getXPos() <= (turtles.at(0).getXPos() + turtleWidth - 1)) ||
+		   ((straws.at(i).getXPos() + strawWidth) >= turtles.at(0).getXPos()+1 && (straws.at(i).getXPos() + strawWidth) <= (turtles.at(0).getXPos() + turtleWidth -1)))
+		{
+			if ((straws.at(i).getYPos() >= turtles.at(0).getYPos()+2 && straws.at(i).getYPos() <= (turtles.at(0).getYPos() + turtleHeight -2)) ||
+				((straws.at(i).getYPos() + strawHeight) >= turtles.at(0).getYPos()+2 && (straws.at(i).getYPos() + strawHeight) <= (turtles.at(0).getYPos() + turtleHeight - 2)))
+			{
+				turtles.at(0).setLifes(turtles.at(0).getLifes() - 1);
+				cout << "trafiony";
+				indexOfStrawToDel = straws.at(i).getId();
+				
+			}
+		}
+		if (oldIndexOfStrawToDel != indexOfStrawToDel)
+		{
+			oldIndexOfStrawToDel = indexOfStrawToDel;
+			deleteStraw(i);
+			break;
+		}
+
+		if ((straws.at(i).getXPos() >= turtles.at(1).getXPos()+1 && straws.at(i).getXPos() <= (turtles.at(1).getXPos() + turtleWidth -1 )) ||
+			((straws.at(i).getXPos() + strawWidth) >= turtles.at(1).getXPos()+1 && (straws.at(i).getXPos() + strawWidth) <= (turtles.at(1).getXPos() + turtleWidth -1)))
+		{
+			if ((straws.at(i).getYPos() >= turtles.at(1).getYPos()+2 && straws.at(i).getYPos() <= (turtles.at(1).getYPos() + turtleHeight -2)) ||
+				((straws.at(i).getYPos() + strawHeight) >= turtles.at(1).getYPos() +2 && (straws.at(i).getYPos() + strawHeight) <= (turtles.at(1).getYPos() + turtleHeight -2)))
+			{
+				turtles.at(1).setLifes(turtles.at(1).getLifes() - 1);
+				cout << "trafiony";
+				indexOfStrawToDel = straws.at(i).getId();
+			}
+		}
+		if (oldIndexOfStrawToDel != indexOfStrawToDel)
+		{
+			oldIndexOfStrawToDel = indexOfStrawToDel;
+			deleteStraw(i);
+			break;
+		}
+
+	/*	if ((turtles.at(0).getXPos() == i.getXPos()) || (turtles.at(0).getYPos() == i.getYPos())) {
 			turtles.at(0).setLifes(turtles.at(0).getLifes() - 1);
 		}
 		if ((turtles.at(1).getXPos() == i.getXPos()) || (turtles.at(1).getYPos() == i.getYPos())) {
 			turtles.at(1).setLifes(turtles.at(1).getLifes() - 1);
-		}
+		}*/
 	}
 }
 
@@ -273,7 +312,19 @@ void strawMustFall() {
 		oldY++;
 		straws.at(i).setYPos(oldY);
 	}
+	for (int i = 0; i < straws.size(); i++)
+	{
+		if (straws.at(i).getYPos() > height) 
+		{
+			deleteStraw(i);
+			break;
+		}
+	}
+	isTurtleHurt();
+
 }
+
+
 
 void input() {
 	if (_kbhit())
@@ -286,38 +337,62 @@ void input() {
 		switch (_getch())
 		{
 		case 72:		//up
-			turtles.at(0).setYPos(oldY1 -= 3);	//player1.setYPos(oldY1 -= 3);
+			if (turtles.at(0).getYPos() > 1)
+			{
+				turtles.at(0).setYPos(oldY1 -= 1);	//player1.setYPos(oldY1 -= 3);
+			}
 			break;
 
 		case 80:		//down
-			turtles.at(0).setYPos(oldY1 += 3);	//player1.setYPos(oldY1 += 3);
+			if (turtles.at(0).getYPos() + turtleHeight < height - 1)
+			{
+				turtles.at(0).setYPos(oldY1 += 1);	//player1.setYPos(oldY1 += 3);
+			}
 			break;
 
 		case 77:		//right
-			turtles.at(0).setXPos(oldX1 += 3);	//player1.setXPos(oldX1 += 3);
+			if (turtles.at(0).getXPos() + turtleWidth < width - 1)
+			{
+				turtles.at(0).setXPos(oldX1 += 1);	//player1.setXPos(oldX1 += 3);
+			}
 			break;
 
 		case 75:		//left
-			turtles.at(0).setXPos(oldX1 -= 3);	//player1.setXPos(oldX1 -= 3);
+			if (turtles.at(0).getXPos() > 1)
+			{
+				turtles.at(0).setXPos(oldX1 -= 1);	//player1.setXPos(oldX1 -= 3);
+			}
 			break;
 		}
 
 		switch (_getch())
 		{
 		case 'w':		//up
-			turtles.at(1).setYPos(oldY2 -= 3);	//player2.setYPos(oldY2 -= 3);
+			if (turtles.at(1).getYPos() > 1)
+			{
+				turtles.at(1).setYPos(oldY2 -= 1);	//player2.setYPos(oldY2 -= 3);
+			}
 			break;
 
 		case 's':		//down
-			turtles.at(1).setYPos(oldY2 += 3);	//player2.setYPos(oldY2 += 3);
+			if (turtles.at(1).getYPos() + turtleHeight < height - 1)
+			{
+				turtles.at(1).setYPos(oldY2 += 1);	//player2.setYPos(oldY2 += 3);
+			}
 			break;
 
 		case 'd':		//right
-			turtles.at(1).setXPos(oldX2 += 3);	//player2.setXPos(oldX2 += 3);
+			if (turtles.at(1).getXPos() + turtleWidth < width - 1)
+			{
+				turtles.at(1).setXPos(oldX2 += 1);	//player2.setXPos(oldX2 += 3);
+			}
 			break;
 
 		case 'a':		//left
-			turtles.at(1).setXPos(oldX2 -= 3);	//player2.setXPos(oldY2 -= 3);
+			if (turtles.at(1).getXPos() > 1)
+			{
+				turtles.at(1).setXPos(oldX2 -= 1);	//player2.setXPos(oldY2 -= 3);
+			}
 			break;
 		}
 		elementsToFrame();
@@ -330,8 +405,7 @@ int main()
 	turtles.push_back(player2);
 	srand(time(0));
 
-	Straw newStraw(40, 10);
-	straws.push_back(newStraw);
+
 
 	loadTurtle();
 	loadFrame();

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctime>
+#include <process.h>
 
 using namespace std;
 
@@ -94,14 +95,14 @@ Turtle player1(4, 10);
 
 Turtle player2(22, 29);
 
-int height = 40;
-int width = 120;
+const int height = 40;
+const int width = 120;
 
-int turtleWidth = 15;
-int turtleHeight = 10;
+const int turtleWidth = 15;
+const int turtleHeight = 10;
 
-int strawWidth = 4;
-int strawHeight = 10;
+const int strawWidth = 4;
+const int strawHeight = 10;
 
 int howManyStraws = 0;
 int oldIndexOfStrawToDel = -1;
@@ -110,6 +111,9 @@ int indexOfStrawToDel = -1;
 clock_t start;
 //int turtleX = 5;
 //int turtleY = 9;
+
+CRITICAL_SECTION paint_Section;
+CRITICAL_SECTION move_Section;
 
 void loadTurtle() {
 	turtleInString.push_back("      ___      ");
@@ -159,8 +163,9 @@ void loadFrame() {
 	frameInString.push_back(topbottom);
 }
 
-void elementsToFrame() {
+void __cdecl elementsToFrame( void *Args) {
 
+	EnterCriticalSection(&paint_Section);
 	loadFrame();
 
 
@@ -191,6 +196,8 @@ void elementsToFrame() {
 			}
 		}
 	}
+	LeaveCriticalSection(&paint_Section);
+	_endthread();
 }
 
 /*
@@ -253,7 +260,7 @@ void generateStraw() {
 		Straw newStraw(strawPosition, -9, howManyStraws);
 		howManyStraws++;
 		straws.push_back(newStraw);
-		elementsToFrame();
+		HANDLE hThread = (HANDLE) _beginthread( elementsToFrame, 0, NULL);
 	}
 }
 
@@ -266,7 +273,7 @@ void isTurtleHurt() {
 				((straws.at(i).getYPos() + strawHeight) >= turtles.at(0).getYPos()+2 && (straws.at(i).getYPos() + strawHeight) <= (turtles.at(0).getYPos() + turtleHeight - 2)))
 			{
 				turtles.at(0).setLifes(turtles.at(0).getLifes() - 1);
-				cout << "trafiony";
+				//std::cout << "trafiony";
 				indexOfStrawToDel = straws.at(i).getId();
 				
 			}
@@ -285,7 +292,7 @@ void isTurtleHurt() {
 				((straws.at(i).getYPos() + strawHeight) >= turtles.at(1).getYPos() +2 && (straws.at(i).getYPos() + strawHeight) <= (turtles.at(1).getYPos() + turtleHeight -2)))
 			{
 				turtles.at(1).setLifes(turtles.at(1).getLifes() - 1);
-				cout << "trafiony";
+				//std::cout << "trafiony";
 				indexOfStrawToDel = straws.at(i).getId();
 			}
 		}
@@ -326,41 +333,53 @@ void strawMustFall() {
 
 
 
-void input() {
-	if (_kbhit())
-	{
-		int oldX1 = turtles.at(0).getXPos();	//player1.getXPos();
-		int oldY1 = turtles.at(0).getYPos();	//player1.getYPos();
-		int oldX2 = turtles.at(1).getXPos();	//player2.getXPos();
-		int oldY2 = turtles.at(1).getYPos();	//player2.getYPos();
+void __cdecl input( void *Args) {
+	EnterCriticalSection(&move_Section);
+
+		int oldX0 = turtles.at(0).getXPos();	//player1.getXPos();
+		int oldY0 = turtles.at(0).getYPos();	//player1.getYPos();
+		int oldX1 = turtles.at(1).getXPos();	//player2.getXPos();
+		int oldY1 = turtles.at(1).getYPos();	//player2.getYPos();
 
 		switch (_getch())
 		{
 		case 72:		//up
 			if (turtles.at(0).getYPos() > 1)
 			{
-				turtles.at(0).setYPos(oldY1 -= 1);	//player1.setYPos(oldY1 -= 3);
+				if ((( oldY0 - 1 > (oldY1 + turtleHeight)) || (oldX0 > oldX1 + turtleWidth )) || (oldX0 + turtleWidth < oldX1)) 
+				{
+					turtles.at(0).setYPos(oldY0 -= 1);	//player1.setYPos(oldY1 -= 3);
+				}
 			}
 			break;
 
 		case 80:		//down
 			if (turtles.at(0).getYPos() + turtleHeight < height - 1)
 			{
-				turtles.at(0).setYPos(oldY1 += 1);	//player1.setYPos(oldY1 += 3);
+				if (((oldY0 + 1 + turtleHeight) < oldY1 || (oldX0 > oldX1 + turtleWidth)) || (oldX0 + turtleWidth < oldX1))
+				{
+					turtles.at(0).setYPos(oldY0 += 1);	//player1.setYPos(oldY1 += 3);
+				}
 			}
 			break;
 
 		case 77:		//right
 			if (turtles.at(0).getXPos() + turtleWidth < width - 1)
 			{
-				turtles.at(0).setXPos(oldX1 += 1);	//player1.setXPos(oldX1 += 3);
+				if ((((oldX0 + 1 + turtleWidth) < oldX1) || (oldY0 > oldY1 + turtleHeight)) || (oldY0 + turtleHeight < oldY1))
+				{
+					turtles.at(0).setXPos(oldX0 += 1);	//player1.setXPos(oldX1 += 3);
+				}
 			}
 			break;
 
 		case 75:		//left
 			if (turtles.at(0).getXPos() > 1)
-			{
-				turtles.at(0).setXPos(oldX1 -= 1);	//player1.setXPos(oldX1 -= 3);
+			{	
+				if ((( oldX0 -1 > (oldX1 + turtleWidth)) || (oldY0 > oldY1 + turtleHeight)) || (oldY0 + turtleHeight < oldY1))
+				{
+					turtles.at(0).setXPos(oldX0 -= 1);	//player1.setXPos(oldX1 -= 3);
+				}
 			}
 			break;
 		}
@@ -370,37 +389,53 @@ void input() {
 		case 'w':		//up
 			if (turtles.at(1).getYPos() > 1)
 			{
-				turtles.at(1).setYPos(oldY2 -= 1);	//player2.setYPos(oldY2 -= 3);
+				if (((oldY1 - 1 > (oldY0 + turtleHeight)) || (oldX0 > oldX1 + turtleWidth)) || (oldX0 + turtleWidth < oldX1))
+				{
+					turtles.at(1).setYPos(oldY1 -= 1);	//player2.setYPos(oldY2 -= 3);
+				}
 			}
 			break;
 
 		case 's':		//down
 			if (turtles.at(1).getYPos() + turtleHeight < height - 1)
 			{
-				turtles.at(1).setYPos(oldY2 += 1);	//player2.setYPos(oldY2 += 3);
+				if (((oldY1 + 1 + turtleHeight) < oldY0 || (oldX0 > oldX1 + turtleWidth)) || (oldX0 + turtleWidth < oldX1))
+				{
+					turtles.at(1).setYPos(oldY1 += 1);	//player2.setYPos(oldY2 += 3);
+				}
 			}
 			break;
 
 		case 'd':		//right
 			if (turtles.at(1).getXPos() + turtleWidth < width - 1)
 			{
-				turtles.at(1).setXPos(oldX2 += 1);	//player2.setXPos(oldX2 += 3);
+				if ((((oldX1 + 1 + turtleWidth) < oldX0) || (oldY0 > oldY1 + turtleHeight)) || (oldY0 + turtleHeight < oldY1))
+				{
+					turtles.at(1).setXPos(oldX1 += 1);	//player2.setXPos(oldX2 += 3);
+				}
 			}
 			break;
 
 		case 'a':		//left
 			if (turtles.at(1).getXPos() > 1)
 			{
-				turtles.at(1).setXPos(oldX2 -= 1);	//player2.setXPos(oldY2 -= 3);
+				if ((( oldX1 - 1 > (oldX0 + turtleWidth)) || (oldY0 > oldY1 + turtleHeight)) || (oldY0 + turtleHeight < oldY1))
+				{
+					turtles.at(1).setXPos(oldX1 -= 1);	//player2.setXPos(oldY2 -= 3);
+				}
 			}
 			break;
 		}
-		elementsToFrame();
-	}
+		HANDLE hThread3 = (HANDLE)_beginthread(elementsToFrame, 0, NULL);
+	LeaveCriticalSection(&move_Section);
+	_endthread();
 }
 
 int main()
 {
+	InitializeCriticalSection(&paint_Section);
+	InitializeCriticalSection(&move_Section);
+
 	turtles.push_back(player1);
 	turtles.push_back(player2);
 	srand(time(0));
@@ -410,7 +445,7 @@ int main()
 	loadTurtle();
 	loadFrame();
 	loadStraw();
-	elementsToFrame();
+	HANDLE hThread = (HANDLE)_beginthread(elementsToFrame, 0, NULL);
 	start = clock();
 
 	while (true)
@@ -418,17 +453,21 @@ int main()
 		system("cls");
 		generateStraw();
 		strawMustFall();
-		input();
-
+		if (_kbhit())
+		{
+			HANDLE hThread2 = (HANDLE)_beginthread(input, 0, NULL);
+		}
 
 		for (unsigned int i = 0; i < frameInString.size(); i++) {
-			cout << frameInString[i] << endl;
+			std::cout << frameInString[i] << endl;
 		}
 
 		printf("Czas rozgrywki: %d s\n", ((clock() - start)) / 1000);
-		cout << "Zycia gracza nr1: " << turtles.at(0).getLifes() << endl;
-		cout << "Zycia gracza nr2: " << turtles.at(1).getLifes() << endl;
+		std::cout << "Zycia gracza nr1: " << turtles.at(0).getLifes() << endl;
+		std::cout << "Zycia gracza nr2: " << turtles.at(1).getLifes() << endl;
 		Sleep(100);
 
 	}
+
+	//DeleteCriticalSection( & paint_Section);
 }

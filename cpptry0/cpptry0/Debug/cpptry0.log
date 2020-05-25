@@ -1,8 +1,8 @@
 ﻿  main.cpp
-C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(204,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
-C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(213,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
-C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(292,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
-C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(348,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
-C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(354,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
-C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(473,12): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
+C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(210,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(218,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(303,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(357,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(364,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+C:\Users\User\source\repos\cpptry0\cpptry0\main.cpp(485,12): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
   cpptry0.vcxproj -> C:\Users\User\source\repos\cpptry0\Debug\cpptry0.exe

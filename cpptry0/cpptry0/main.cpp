@@ -109,12 +109,36 @@ int oldIndexOfStrawToDel = -1;
 int indexOfStrawToDel = -1;
 
 clock_t start;
-//int turtleX = 5;
-//int turtleY = 9;
-
+//                __	__    _            __   __    _    ___ ____         __     ___ _____
+// \      / \  / /  \ |  \  / \  |       /  \ |  \  / \  /       /   |\  | |  \     |   | | 
+//  \    /   \/ |  __ |__/ |___| |      |  __ |__/ |___| |      /    | \ | |__/     |   | | 
+//   \/\/    /   \__/ |  \ |   | |___    \__/ |  \ |   | \___  / __  |  \| |  \    _|_ _|_|_ 
 CRITICAL_SECTION paint_Section;
 CRITICAL_SECTION move_Section;
+void loadEnd(int losser) {
+	if (losser == 1)
+	{
+		std::cout << 
+			"                 __   __    _            __   __    _    ___ ____          __     ___ \n" <<
+			"  \\      / \\  / /  \\ |  \\  / \\  |       /  \\ |  \\  / \\  /       /   |\\  | |  \\     |  \n" <<
+			"   \\    /   \\/ |  __ |__/ |___| |      |  __ |__/ |___| |      /    | \\ | |__/     |  \n" <<
+			"    \\/\\/    /   \\__/ |  \\ |   | |___    \\__/ |  \\ |   | \\___ /___   |  \\| |  \\    _|_ \n"
+		;
+		
+	}
+	else
+	{
+		std::cout <<
+			"                 __   __    _            __   __    _    ___ ____          __     _____\n" <<
+			"  \\      / \\  / /  \\ |  \\  / \\  |       /  \\ |  \\  / \\  /       /   |\\  | |  \\     | | \n" <<
+			"   \\    /   \\/ |  __ |__/ |___| |      |  __ |__/ |___| |      /    | \\ | |__/     | | \n" <<
+			"    \\/\\/    /   \\__/ |  \\ |   | |___    \\__/ |  \\ |   | \\___ /___   |  \\| |  \\    _|_|_\n"
+			;
 
+	}
+	Sleep(10000);
+	exit(0);
+}
 void loadTurtle() {
 	turtleInString.push_back("      ___      ");
 	turtleInString.push_back("__   |   |   __");
@@ -254,7 +278,7 @@ void deleteStraw(int index) {
 	straws.erase(straws.begin() + index);
 }
 void generateStraw() {
-	int number = rand() % 20;
+	int number = rand() % 4;
 	if (number == 1) {
 		int strawPosition = rand() % width;
 		Straw newStraw(strawPosition, -9, howManyStraws);
@@ -303,6 +327,14 @@ void isTurtleHurt() {
 			break;
 		}
 
+		if (turtles.at(0).getLifes() <= 0)
+		{
+			loadEnd(0);
+		}
+		if (turtles.at(1).getLifes() <= 0)
+		{
+			loadEnd(1);
+		}
 	/*	if ((turtles.at(0).getXPos() == i.getXPos()) || (turtles.at(0).getYPos() == i.getYPos())) {
 			turtles.at(0).setLifes(turtles.at(0).getLifes() - 1);
 		}
